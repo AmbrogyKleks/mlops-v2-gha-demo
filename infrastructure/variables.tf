@@ -30,3 +30,8 @@ variable "client_secret" {
   description = "Service Principal Secret"
   default     = ""
 }
+
+variable "github_actions_service_principal_id" {
+  description = "GitHub Actions Service Principal Object ID"
+  default     = ""
+}
