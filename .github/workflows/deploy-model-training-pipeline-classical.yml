@@ -7,9 +7,68 @@ permissions:
   contents: read
 jobs:
   get-config:
-      uses: Azure/mlops-templates/.github/workflows/read-yaml.yml@Dec2025patch
-      with:
-        file_name: config-infra-prod.yml
+  runs-on: ubuntu-latest
+  outputs:
+    resource_group: ${{ steps.cfg.outputs.resource_group }}
+    aml_workspace: ${{ steps.cfg.outputs.aml_workspace }}
+    location: ${{ steps.cfg.outputs.location }}
+    namespace: ${{ steps.cfg.outputs.namespace }}
+    postfix: ${{ steps.cfg.outputs.postfix }}
+    environment: ${{ steps.cfg.outputs.environment }}
+    enable_aml_computecluster: ${{ steps.cfg.outputs.enable_aml_computecluster }}
+    enable_monitoring: ${{ steps.cfg.outputs.enable_monitoring }}
+    terraform_version: ${{ steps.cfg.outputs.terraform_version }}
+    terraform_workingdir: ${{ steps.cfg.outputs.terraform_workingdir }}
+    terraform_st_location: ${{ steps.cfg.outputs.terraform_st_location }}
+    terraform_st_storage_account: ${{ steps.cfg.outputs.terraform_st_storage_account }}
+    terraform_st_resource_group: ${{ steps.cfg.outputs.terraform_st_resource_group }}
+    terraform_st_container_name: ${{ steps.cfg.outputs.terraform_st_container_name }}
+    terraform_st_key: ${{ steps.cfg.outputs.terraform_st_key }}
+  steps:
+    - uses: actions/checkout@v4
+
+    - id: cfg
+      shell: bash
+      run: |
+        get_value() {
+          local key="$1"
+          grep -E "^  ${key}:" config-infra-prod.yml | head -1 | sed 's/^  [^:]*: *//'
+        }
+
+        namespace="$(get_value namespace)"
+        postfix="$(get_value postfix)"
+        location="$(get_value location)"
+        environment="$(get_value environment)"
+        enable_aml_computecluster="$(get_value enable_aml_computecluster)"
+        enable_monitoring="$(get_value enable_monitoring)"
+        terraform_version="$(get_value terraform_version)"
+        terraform_workingdir="$(get_value terraform_workingdir)"
+        terraform_st_location="$(get_value terraform_st_location)"
+        terraform_st_storage_account="$(get_value terraform_st_storage_account)"
+        terraform_st_resource_group="$(get_value terraform_st_resource_group)"
+        terraform_st_container_name="$(get_value terraform_st_container_name)"
+        terraform_st_key="$(get_value terraform_st_key)"
+
+        resource_group="rg-${namespace}-${postfix}${environment}"
+        aml_workspace="mlw-${namespace}-${postfix}${environment}"
+
+        {
+          echo "resource_group=$resource_group"
+          echo "aml_workspace=$aml_workspace"
+          echo "location=$location"
+          echo "namespace=$namespace"
+          echo "postfix=$postfix"
+          echo "environment=$environment"
+          echo "enable_aml_computecluster=$enable_aml_computecluster"
+          echo "enable_monitoring=$enable_monitoring"
+          echo "terraform_version=$terraform_version"
+          echo "terraform_workingdir=$terraform_workingdir"
+          echo "terraform_st_location=$terraform_st_location"
+          echo "terraform_st_storage_account=$terraform_st_storage_account"
+          echo "terraform_st_resource_group=$terraform_st_resource_group"
+          echo "terraform_st_container_name=$terraform_st_container_name"
+          echo "terraform_st_key=$terraform_st_key"
+        } >> "$GITHUB_OUTPUT"
   register-environment:
       needs: get-config
       uses: Azure/mlops-templates/.github/workflows/register-environment.yml@Dec2025patch
