@@ -58,3 +58,7 @@ variable "storage_account_name" {
   type        = string
   description = "The Name of the Storage Account linked to AML workspace"
 }
+variable "uai_name" {
+  type        = string
+  description = "Name of the user assigned managed identity for AML workspace"
+}

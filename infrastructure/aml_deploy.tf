@@ -17,6 +17,8 @@ module "resource_group" {
 module "aml_workspace" {
   source = "./modules/aml-workspace"
 
+  uai_name = "uai-${var.prefix}-${var.postfix}${var.env}"
+
   rg_name  = module.resource_group.name
   location = module.resource_group.location
 

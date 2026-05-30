@@ -1,3 +1,9 @@
+resource "azurerm_user_assigned_identity" "uai" {
+  name                = var.uai_name
+  location            = var.location
+  resource_group_name = var.rg_name
+  tags                = var.tags
+}
 resource "azurerm_machine_learning_workspace" "mlw" {
   name                    = "mlw-${var.prefix}-${var.postfix}${var.env}"
   location                = var.location
@@ -10,7 +16,8 @@ resource "azurerm_machine_learning_workspace" "mlw" {
   sku_name = "Basic"
 
   identity {
-    type = "SystemAssigned"
+    type         = "SystemAssigned,UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.uai.id]
   }
 
   tags = var.tags
