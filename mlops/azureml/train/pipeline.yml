@@ -58,6 +58,8 @@ jobs:
       --train_data ${{inputs.train_data}} 
       --model_output ${{outputs.model_output}}
     environment: azureml:taxi-train-env@latest
+    limits:
+      timeout: 7200
     inputs:
       train_data: ${{parent.jobs.prep_data.outputs.train_data}}
     outputs:
